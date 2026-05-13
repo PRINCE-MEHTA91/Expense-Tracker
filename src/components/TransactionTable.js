@@ -2,13 +2,16 @@
 import { Trash2 } from "lucide-react";
 
 export default function TransactionTable({ expenses = [], onDelete, rate = 1, formatCurrency }) {
-  // Category colors mapping
   const getCategoryColor = (category) => {
     switch (category) {
       case 'Food': return 'text-orange-400 bg-orange-400/10 border-orange-400/20';
       case 'Travel': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
       case 'Marketing': return 'text-purple-400 bg-purple-400/10 border-purple-400/20';
       case 'Utilities': return 'text-cyan-400 bg-cyan-400/10 border-cyan-400/20';
+      case 'Salary': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
+      case 'Freelance': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
+      case 'Business': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
+      case 'Investments': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
       default: return 'text-zinc-400 bg-zinc-400/10 border-zinc-400/20';
     }
   };
@@ -43,20 +46,25 @@ export default function TransactionTable({ expenses = [], onDelete, rate = 1, fo
             </thead>
             <tbody className="divide-y divide-zinc-800/50">
               {expenses.map((expense) => {
-                const date = new Date(parseInt(expense.id));
+                const date = expense.date ? new Date(expense.date) : new Date(parseInt(expense.id));
                 const formattedDate = isNaN(date) ? "Today" : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 
+                const isIncome = !!expense.incomeName;
+                const name = expense.expenseName || expense.incomeName || 'Unnamed';
+                const amountClass = isIncome ? 'text-emerald-400' : 'text-rose-400';
+                const amountPrefix = isIncome ? '+' : '-';
+
                 return (
                   <tr key={expense.id} className="hover:bg-zinc-800/30 transition-colors group">
                     <td className="px-4 py-4 text-zinc-400 whitespace-nowrap">{formattedDate}</td>
-                    <td className="px-4 py-4 font-medium text-zinc-200">{expense.expenseName}</td>
+                    <td className="px-4 py-4 font-medium text-zinc-200">{name}</td>
                     <td className="px-4 py-4">
                       <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide border ${getCategoryColor(expense.category)}`}>
                         {expense.category}
                       </span>
                     </td>
-                    <td className="px-4 py-4 font-semibold text-rose-400 text-right">
-                      -{formatCurrency(parseFloat(expense.amount) * rate)}
+                    <td className={`px-4 py-4 font-semibold text-right ${amountClass}`}>
+                      {amountPrefix}{formatCurrency(parseFloat(expense.amount) * rate)}
                     </td>
                     <td className="px-4 py-4 text-right">
                       <button 

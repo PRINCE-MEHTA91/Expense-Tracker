@@ -58,11 +58,13 @@ export default function Navbar({ setSidebarOpen, searchQuery, setSearchQuery, cu
         
         <div className="flex items-center gap-3 border-l border-zinc-800 pl-4 lg:pl-5">
           <div className="hidden md:flex flex-col items-end">
-            <span className="text-sm font-semibold text-zinc-100">Alex Morgan</span>
-            <span className="text-xs text-zinc-500">alex@example.com</span>
+            <span className="text-sm font-semibold text-zinc-100">User</span>
+            <span className="text-xs text-zinc-500">
+              {typeof window !== "undefined" ? localStorage.getItem("expenseTracker_activeUser") || "Guest" : "Guest"}
+            </span>
           </div>
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-2 border-zinc-800 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20 cursor-pointer hover:scale-105 transition-transform">
-            AM
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 border-2 border-zinc-800 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20 cursor-pointer hover:scale-105 transition-transform">
+            U
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
 "use client";
 
-export default function BudgetProgress({ expenses = [], rate = 1, formatCurrency }) {
-  // Predefined budget limits in base USD
-  const budgetLimitsUSD = {
+export default function BudgetProgress({ expenses = [], rate = 1, formatCurrency, budgetLimits = {} }) {
+  // Predefined budget limits in base USD if none provided
+  const budgetLimitsUSD = Object.keys(budgetLimits).length > 0 ? budgetLimits : {
     'Food': 1500,
     'Travel': 800,
     'Marketing': 2000,
