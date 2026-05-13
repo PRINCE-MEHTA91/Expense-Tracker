@@ -34,8 +34,13 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50 font-sans flex items-center justify-center p-4 selection:bg-blue-500/30">
-      <div className="max-w-md w-full space-y-8 p-8 bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/60 rounded-3xl shadow-2xl relative overflow-hidden">
+    <div className="min-h-screen bg-zinc-950 text-zinc-50 font-sans flex items-center justify-center p-4 selection:bg-blue-500/30 relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 z-0 opacity-20 bg-center bg-no-repeat bg-cover"
+        style={{ backgroundImage: "url('/money-bag.png')" }}
+      />
+      <div className="max-w-md w-full space-y-8 p-8 bg-zinc-900/80 backdrop-blur-2xl border border-zinc-800/60 rounded-3xl shadow-2xl relative z-10 overflow-hidden">
         {/* Glow effects */}
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 rounded-full bg-blue-500/20 blur-3xl" />
         <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 rounded-full bg-indigo-500/20 blur-3xl" />
