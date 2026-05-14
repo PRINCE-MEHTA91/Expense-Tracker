@@ -1,7 +1,9 @@
 "use client";
 import { Search, Bell, Menu } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
 
-export default function Navbar({ setSidebarOpen, searchQuery, setSearchQuery, currency, setCurrency, ratesLoading }) {
+export default function Navbar({ setSidebarOpen, searchQuery, setSearchQuery }) {
+  const { currency, setCurrency, ratesLoading } = useCurrency();
   return (
     <header className="h-20 flex items-center justify-between px-4 lg:px-8 bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-800/60 sticky top-0 z-30">
       <div className="flex items-center gap-4 flex-1">

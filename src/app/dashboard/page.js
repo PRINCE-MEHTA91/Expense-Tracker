@@ -5,14 +5,22 @@ import StatsCard from "@/components/StatsCard";
 import ChartSection from "@/components/ChartSection";
 import CategoryBreakdown from "@/components/CategoryBreakdown";
 import TransactionTable from "@/components/TransactionTable";
-import { DollarSign, ArrowUpRight, ArrowDownRight, Activity } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Activity } from "lucide-react";
+
+// Dynamic currency symbol icon — updates when currency changes
+const CURRENCY_SYMBOLS = { USD: '$', EUR: '€', GBP: '£', INR: '₹' };
+function CurrencySymbolIcon() {
+  const { currency } = useCurrency();
+  const symbol = CURRENCY_SYMBOLS[currency] || '$';
+  return <span className="text-xl font-bold leading-none">{symbol}</span>;
+}
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function DashboardOverview() {
   const [expenses, setExpenses] = useState([]);
   const [income, setIncome] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currency, setCurrency] = useState("USD");
-  const [rate, setRate] = useState(1);
+  const { currency, rate, formatCurrency } = useCurrency();
 
   useEffect(() => {
     const activeUser = localStorage.getItem("expenseTracker_activeUser");
@@ -22,9 +30,6 @@ export default function DashboardOverview() {
       
       const savedIncome = localStorage.getItem(`expenseTracker_${activeUser}_income`);
       if (savedIncome) setIncome(JSON.parse(savedIncome));
-
-      const savedCurrency = localStorage.getItem(`expenseTracker_${activeUser}_currency`);
-      if (savedCurrency) setCurrency(savedCurrency);
     }
     setIsLoaded(true);
   }, []);
@@ -37,10 +42,6 @@ export default function DashboardOverview() {
   const totalBalanceDisplay = (totalIncomeUSD - totalExpensesUSD) * rate;
   
   const savingsRate = totalIncomeUSD > 0 ? ((totalIncomeUSD - totalExpensesUSD) / totalIncomeUSD) * 100 : 0;
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(value);
-  };
 
   if (!isLoaded) return null;
 
@@ -57,7 +58,7 @@ export default function DashboardOverview() {
         <StatsCard 
           title="Total Balance" 
           amount={formatCurrency(totalBalanceDisplay)} 
-          icon={DollarSign}
+          icon={CurrencySymbolIcon}
           colorTheme={{ bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20", glow: "bg-blue-500/10" }}
         />
         <StatsCard 

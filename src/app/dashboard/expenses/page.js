@@ -5,12 +5,13 @@ import ExpenseForm from "@/components/ExpenseForm";
 import TransactionTable from "@/components/TransactionTable";
 import CategoryBreakdown from "@/components/CategoryBreakdown";
 import { Plus } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function ExpensesPage() {
   const [expenses, setExpenses] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currency, setCurrency] = useState("USD");
   const [activeUser, setActiveUser] = useState("");
+  const { currency, rate, formatCurrency, toUSD } = useCurrency();
 
   useEffect(() => {
     const user = localStorage.getItem("expenseTracker_activeUser");
@@ -18,15 +19,14 @@ export default function ExpensesPage() {
       setActiveUser(user);
       const savedExpenses = localStorage.getItem(`expenseTracker_${user}_expenses`);
       if (savedExpenses) setExpenses(JSON.parse(savedExpenses));
-      
-      const savedCurrency = localStorage.getItem(`expenseTracker_${user}_currency`);
-      if (savedCurrency) setCurrency(savedCurrency);
     }
     setIsLoaded(true);
   }, []);
 
   const handleAddExpense = (expense) => {
-    const newExpenses = [expense, ...expenses];
+    // Normalize entered amount to USD base so switching currency converts correctly
+    const normalizedExpense = { ...expense, amount: toUSD(expense.amount) };
+    const newExpenses = [normalizedExpense, ...expenses];
     setExpenses(newExpenses);
     if (activeUser) {
       localStorage.setItem(`expenseTracker_${activeUser}_expenses`, JSON.stringify(newExpenses));
@@ -47,10 +47,6 @@ export default function ExpensesPage() {
     return parts.find(part => part.type === 'currency')?.value || '$';
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(value);
-  };
-
   if (!isLoaded) return null;
 
   return (
@@ -64,11 +60,11 @@ export default function ExpensesPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6">
         <div className="xl:col-span-2 space-y-6">
-          <TransactionTable expenses={expenses} onDelete={handleDeleteExpense} rate={1} formatCurrency={formatCurrency} />
+          <TransactionTable expenses={expenses} onDelete={handleDeleteExpense} rate={rate} formatCurrency={formatCurrency} />
         </div>
         <div className="xl:col-span-1 space-y-6">
           <ExpenseForm onAddExpense={handleAddExpense} currencySymbol={getCurrencySymbol()} />
-          <CategoryBreakdown expenses={expenses} rate={1} formatCurrency={formatCurrency} />
+          <CategoryBreakdown expenses={expenses} rate={rate} formatCurrency={formatCurrency} />
         </div>
       </div>
     </div>

@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { CreditCard, ArrowUpRight, ArrowDownRight, Trash2 } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currency, setCurrency] = useState("USD");
+  const { currency, rate, formatCurrency } = useCurrency();
 
   useEffect(() => {
     const user = localStorage.getItem("expenseTracker_activeUser");
@@ -30,16 +31,9 @@ export default function TransactionsPage() {
       });
 
       setTransactions(allTrans);
-      
-      const savedCurrency = localStorage.getItem(`expenseTracker_${user}_currency`);
-      if (savedCurrency) setCurrency(savedCurrency);
     }
     setIsLoaded(true);
   }, []);
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(value);
-  };
 
   const handleDelete = (id, type) => {
     const user = localStorage.getItem("expenseTracker_activeUser");
@@ -113,12 +107,12 @@ export default function TransactionsPage() {
                       {tx.type === 'income' ? (
                         <div className="flex items-center justify-end gap-1 text-emerald-400">
                           <ArrowUpRight size={14} />
-                          {formatCurrency(tx.amount)}
+                          {formatCurrency(parseFloat(tx.amount) * rate)}
                         </div>
                       ) : (
                         <div className="flex items-center justify-end gap-1 text-rose-400">
                           <ArrowDownRight size={14} />
-                          {formatCurrency(tx.amount)}
+                          {formatCurrency(parseFloat(tx.amount) * rate)}
                         </div>
                       )}
                     </td>

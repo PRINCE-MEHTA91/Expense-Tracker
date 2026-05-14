@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import BudgetProgress from "@/components/BudgetProgress";
 import { Target, Save } from "lucide-react";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function BudgetsPage() {
   const [expenses, setExpenses] = useState([]);
   const [budgets, setBudgets] = useState({});
   const [isLoaded, setIsLoaded] = useState(false);
-  const [currency, setCurrency] = useState("USD");
   const [activeUser, setActiveUser] = useState("");
+  const { currency, rate, formatCurrency } = useCurrency();
 
   const categories = ["Food", "Travel", "Marketing", "Utilities", "Other"];
 
@@ -34,16 +35,13 @@ export default function BudgetsPage() {
           'Other': 500
         });
       }
-      
-      const savedCurrency = localStorage.getItem(`expenseTracker_${user}_currency`);
-      if (savedCurrency) setCurrency(savedCurrency);
     }
     setIsLoaded(true);
   }, []);
 
   const handleBudgetChange = (category, value) => {
     const numValue = parseFloat(value) || 0;
-    const newBudgets = { ...budgets, [category]: numValue };
+    const newBudgets = { ...budgets, [category]: numValue / rate };
     setBudgets(newBudgets);
   };
 
@@ -54,9 +52,6 @@ export default function BudgetsPage() {
     }
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(value);
-  };
 
   if (!isLoaded) return null;
 
@@ -86,10 +81,10 @@ export default function BudgetsPage() {
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">{new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).formatToParts(0).find(p=>p.type==='currency')?.value || '$'}</span>
                   <input
                     type="number"
-                    value={budgets[cat] || ''}
+                    value={budgets[cat] ? Math.round(budgets[cat] * rate) : ''}
                     onChange={(e) => handleBudgetChange(cat, e.target.value)}
                     className="w-full bg-zinc-950/50 border border-zinc-800/80 rounded-xl pl-8 pr-4 py-2.5 text-white focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all duration-200"
-                    placeholder="0.00"
+                    placeholder="0"
                   />
                 </div>
               </div>
@@ -106,7 +101,7 @@ export default function BudgetsPage() {
         </div>
 
         <div>
-          <BudgetProgress expenses={expenses} rate={1} formatCurrency={formatCurrency} budgetLimits={budgets} />
+          <BudgetProgress expenses={expenses} rate={rate} formatCurrency={formatCurrency} budgetLimits={budgets} />
         </div>
       </div>
     </div>
